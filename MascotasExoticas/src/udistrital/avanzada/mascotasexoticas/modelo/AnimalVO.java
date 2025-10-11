@@ -8,15 +8,43 @@ package udistrital.avanzada.mascotasexoticas.modelo;
  *
  * @author sarit
  */
+
+
+/**
+ * Representa los atributos biológicos de un animal exótico.
+ * Esta clase es utilizada como base para construir una mascota exótica.
+ */
 public class AnimalVO {
+
+    /** Nombre común del animal. */
     protected String nombre;
+
+    /** Clasificación taxonómica (mamífero, reptil, etc.). */
     protected String clasificacion;
+
+    /** Familia biológica del animal. */
     protected String familia;
+
+    /** Género biológico del animal. */
     protected String genero;
+
+    /** Especie biológica del animal. */
     protected String especie;
+
+    /** Tipo de alimento principal que consume el animal. */
     protected String alimento;
 
-    public AnimalVO(String nombre, String clasificacion, String familia, String genero, String especie, String alimento) {
+    /**
+     * Constructor completo que inicializa todos los atributos del animal.
+     * @param nombre Nombre común.
+     * @param clasificacion Clasificación taxonómica.
+     * @param familia Familia biológica.
+     * @param genero Género biológico.
+     * @param especie Especie biológica.
+     * @param alimento Tipo de alimento principal.
+     */
+    public AnimalVO(String nombre, String clasificacion, String familia,
+                    String genero, String especie, String alimento) {
         this.nombre = nombre;
         this.clasificacion = clasificacion;
         this.familia = familia;
@@ -72,6 +100,4 @@ public class AnimalVO {
     public void setAlimento(String alimento) {
         this.alimento = alimento;
     }
-    
-    
 }
