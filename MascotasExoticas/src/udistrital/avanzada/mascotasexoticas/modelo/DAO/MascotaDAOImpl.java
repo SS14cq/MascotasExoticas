@@ -4,12 +4,6 @@
  */
 package udistrital.avanzada.mascotasexoticas.modelo.DAO;
 
-/**
- *
- * @author juanr
- */
-
-
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,28 +12,47 @@ import udistrital.avanzada.mascotasexoticas.modelo.MascotaVO;
 import udistrital.avanzada.mascotasexoticas.modelo.conexion.ConexionBD;
 
 /**
- * Implementación del patrón DAO para la entidad MascotaVO.
- * Esta clase se encarga de realizar operaciones CRUD sobre la base de datos.
+ * Implementación concreta de la interfaz {@link MascotaDAO} utilizando JDBC.
+ * <p>
+ * Esta clase implementa el patrón DAO (Data Access Object), separando la lógica de
+ * acceso a datos de la lógica de negocio. Permite realizar operaciones CRUD sobre la tabla
+ * <code>mascotas</code> de la base de datos relacional configurada en {@link ConexionBD}.
+ * </p>
+ * 
+ * <p><b>Responsabilidades:</b></p>
+ * <ul>
+ *   <li>Establecer la comunicación con la base de datos mediante {@link java.sql.Connection}.</li>
+ *   <li>Ejecutar sentencias SQL de inserción, eliminación, modificación y consulta.</li>
+ *   <li>Transformar registros de la base de datos en objetos {@link MascotaVO}.</li>
+ *   <li>Manejar excepciones SQL sin propagar detalles de implementación a otras capas.</li>
+ * </ul>
+ * 
+ * @author Sofia
+ * @version 1.0
+ * @since 12-10-2025
  */
 public class MascotaDAOImpl implements MascotaDAO {
 
-    private Connection conexion;
+    /** Conexión activa a la base de datos. */
+    private final Connection conexion;
 
     /**
-     * Constructor que obtiene la conexión desde la clase Singleton ConexionBD.
+     * Constructor que inicializa la conexión a la base de datos.
+     * <p>
+     * Utiliza el patrón Singleton definido en {@link ConexionBD} para garantizar
+     * una única instancia de conexión compartida.
+     * </p>
      */
     public MascotaDAOImpl() {
         conexion = ConexionBD.getInstancia().getConexion();
     }
 
     /**
-     * Inserta una nueva mascota en la base de datos.
-     * @param mascota MascotaVO a insertar.
-     * @return true si la inserción fue exitosa.
+     * {@inheritDoc}
      */
     @Override
     public boolean insertar(MascotaVO mascota) {
-        String sql = "INSERT INTO mascotas (nombre_comun, apodo, clasificacion, familia, genero, especie, tipo_alimento) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO mascotas (nombre, apodo, clasificacion, familia, genero, especie, alimento) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = conexion.prepareStatement(sql)) {
             stmt.setString(1, mascota.getNombre());
             stmt.setString(2, mascota.getApodo());
@@ -50,15 +63,13 @@ public class MascotaDAOImpl implements MascotaDAO {
             stmt.setString(7, mascota.getAlimento());
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
-            e.printStackTrace();
+            e.printStackTrace(); // En un proyecto real se debe usar un Logger
             return false;
         }
     }
 
     /**
-     * Consulta mascotas por apodo.
-     * @param apodo Apodo a buscar.
-     * @return Lista de mascotas que coinciden.
+     * {@inheritDoc}
      */
     @Override
     public List<MascotaVO> consultarPorApodo(String apodo) {
@@ -77,7 +88,7 @@ public class MascotaDAOImpl implements MascotaDAO {
     }
 
     /**
-     * Consulta mascotas por clasificación.
+     * {@inheritDoc}
      */
     @Override
     public List<MascotaVO> consultarPorClasificacion(String clasificacion) {
@@ -85,7 +96,7 @@ public class MascotaDAOImpl implements MascotaDAO {
     }
 
     /**
-     * Consulta mascotas por familia.
+     * {@inheritDoc}
      */
     @Override
     public List<MascotaVO> consultarPorFamilia(String familia) {
@@ -93,15 +104,15 @@ public class MascotaDAOImpl implements MascotaDAO {
     }
 
     /**
-     * Consulta mascotas por tipo de alimento.
+     * {@inheritDoc}
      */
     @Override
     public List<MascotaVO> consultarPorTipoAlimento(String tipoAlimento) {
-        return consultarPorCampo("tipo_alimento", tipoAlimento);
+        return consultarPorCampo("alimento", tipoAlimento);
     }
 
     /**
-     * Elimina una mascota por apodo.
+     * {@inheritDoc}
      */
     @Override
     public boolean eliminar(String apodo) {
@@ -116,11 +127,11 @@ public class MascotaDAOImpl implements MascotaDAO {
     }
 
     /**
-     * Modifica los datos de una mascota, excepto familia, género y especie.
+     * {@inheritDoc}
      */
     @Override
     public boolean modificar(MascotaVO mascota) {
-        String sql = "UPDATE mascotas SET nombre_comun = ?, clasificacion = ?, tipo_alimento = ? WHERE apodo = ?";
+        String sql = "UPDATE mascotas SET nombre = ?, clasificacion = ?, alimento = ? WHERE apodo = ?";
         try (PreparedStatement stmt = conexion.prepareStatement(sql)) {
             stmt.setString(1, mascota.getNombre());
             stmt.setString(2, mascota.getClasificacion());
@@ -134,7 +145,7 @@ public class MascotaDAOImpl implements MascotaDAO {
     }
 
     /**
-     * Lista todas las mascotas registradas en la base de datos.
+     * {@inheritDoc}
      */
     @Override
     public List<MascotaVO> listarTodas() {
@@ -152,22 +163,38 @@ public class MascotaDAOImpl implements MascotaDAO {
     }
 
     /**
-     * Método auxiliar para construir un objeto MascotaVO desde un ResultSet.
+     * Construye un objeto {@link MascotaVO} a partir de los datos obtenidos de un {@link ResultSet}.
+     * <p>
+     * Este método centraliza la lógica de mapeo entre los registros de la tabla y la representación
+     * de objetos en memoria, evitando duplicación de código.
+     * </p>
+     *
+     * @param rs ResultSet con la fila actual de datos.
+     * @return Objeto {@link MascotaVO} con los datos del registro.
+     * @throws SQLException si ocurre un error al leer los datos.
      */
     private MascotaVO construirMascotaDesdeResultSet(ResultSet rs) throws SQLException {
         AnimalVO animal = new AnimalVO(
-            rs.getString("nombre_comun"),
+            rs.getString("nombre"),
             rs.getString("clasificacion"),
             rs.getString("familia"),
             rs.getString("genero"),
             rs.getString("especie"),
-            rs.getString("tipo_alimento")
+            rs.getString("alimento")
         );
         return new MascotaVO(animal, rs.getString("apodo"));
     }
 
     /**
-     * Método auxiliar para consultas por campo específico.
+     * Ejecuta una consulta filtrando por un campo específico.
+     * <p>
+     * Método auxiliar utilizado para evitar duplicar código en consultas por
+     * clasificación, familia o tipo de alimento.
+     * </p>
+     *
+     * @param campo Nombre de la columna a filtrar.
+     * @param valor Valor que debe tener el campo.
+     * @return Lista de mascotas que coinciden con el filtro.
      */
     private List<MascotaVO> consultarPorCampo(String campo, String valor) {
         List<MascotaVO> resultado = new ArrayList<>();

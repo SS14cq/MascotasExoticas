@@ -5,7 +5,18 @@
 package udistrital.avanzada.mascotasexoticas.modelo;
 
 /**
- * Representa una mascota exótica, incluyendo su apodo y los atributos biológicos heredados de AnimalVO.
+ * <p>
+ * Representa una mascota exótica, incluyendo su apodo y los atributos biológicos heredados de {@link AnimalVO}.
+ * Esta clase permite distinguir entre diferentes individuos de una misma especie mediante un nombre personalizado.
+ * </p>
+ *
+ * <p>
+ * Extiende la clase {@link AnimalVO}, por lo que también incluye información taxonómica como nombre común,
+ * clasificación, familia, género, especie y tipo de alimento.
+ * </p>
+ * @author Sofia
+ * @version 1.0
+ * @since 12-10-2024
  */
 public class MascotaVO extends AnimalVO {
 
@@ -13,9 +24,11 @@ public class MascotaVO extends AnimalVO {
     private String apodo;
 
     /**
-     * Constructor completo que inicializa todos los atributos de la mascota.
+     * Crea una nueva instancia de {@code MascotaVO} con todos los atributos biológicos
+     * y un apodo personalizado.
+     *
      * @param nombre Nombre común del animal.
-     * @param clasificacion Clasificación taxonómica.
+     * @param clasificacion Clasificación taxonómica (ej. mamífero, reptil, ave).
      * @param familia Familia biológica.
      * @param genero Género biológico.
      * @param especie Especie biológica.
@@ -29,8 +42,10 @@ public class MascotaVO extends AnimalVO {
     }
 
     /**
-     * Constructor alternativo que recibe un AnimalVO y el apodo.
-     * @param animal Objeto AnimalVO con los atributos biológicos.
+     * Crea una nueva instancia de {@code MascotaVO} a partir de un objeto {@link AnimalVO}
+     * y un apodo personalizado.
+     *
+     * @param animal Objeto {@link AnimalVO} que contiene la información biológica base.
      * @param apodo Apodo de la mascota.
      */
     public MascotaVO(AnimalVO animal, String apodo) {
@@ -40,29 +55,33 @@ public class MascotaVO extends AnimalVO {
     }
 
     /**
-     * Devuelve el apodo de la mascota.
-     * @return Apodo.
+     * Obtiene el apodo personalizado de la mascota.
+     *
+     * @return apodo de la mascota.
      */
     public String getApodo() {
         return apodo;
     }
 
     /**
-     * Establece el apodo de la mascota.
-     * @param apodo Nuevo apodo.
+     * Establece el apodo personalizado de la mascota.
+     *
+     * @param apodo nuevo apodo de la mascota.
      */
     public void setApodo(String apodo) {
         this.apodo = apodo;
     }
 
     /**
-     * Devuelve una representación textual de la mascota.
-     * @return Cadena con los datos de la mascota.
+     * Devuelve una representación textual legible de la mascota exótica,
+     * incluyendo tanto su apodo como sus atributos biológicos heredados.
+     *
+     * @return cadena de texto con los datos completos de la mascota.
      */
     @Override
     public String toString() {
         return String.format(
-            "Mascota: %s (%s)\nClasificación: %s\nFamilia: %s\nGénero: %s\nEspecie: %s\nAlimento: %s",
+            "Mascota: %s (%s)%nClasificación: %s%nFamilia: %s%nGénero: %s%nEspecie: %s%nAlimento: %s",
             getNombre(), apodo, getClasificacion(), getFamilia(), getGenero(), getEspecie(), getAlimento()
         );
     }
